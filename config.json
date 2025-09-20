@@ -1,0 +1,27 @@
+{
+"name": "SearxNG",
+"version": "1.0.0",
+"slug": "searxng",
+"description": "SearxNG search engine using the official Docker image",
+"arch": ["aarch64", "armv7", "amd64", "i386"],
+"startup": "services",
+"boot": "auto",
+"host_network": false,
+"host_ipc": false,
+"host_pid": false,
+"homeassistant_api": false,
+"host_dbus": false,
+"ingress": false,
+"ingress_panel": false,
+"ports": {
+"8080/tcp": 8080
+},
+"map": [
+["config", "config", "rw"],
+["ssl", "ssl", "rw"]
+],
+"options": {},
+"schema": {},
+"image": "searxng/searxng:latest",
+"webui": "http://[HOST]:[PORT:8080]"
+}

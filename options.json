@@ -1,0 +1,5 @@
+{
+"port": 8080,
+"searx_profile_path": "/config/searxng",
+"extra_env": {}
+}
