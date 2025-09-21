@@ -61,3 +61,5 @@ Dieses Repository enthält ein production‑taugliches Home Assistant Supervisor
 - Add‑on: Passe Lizenz/Author nach Bedarf an.
 - SearxNG upstream: https://github.com/searxng/searxng
 - Docker image reference: https://hub.docker.com/r/searxng/searxng
+
+- @CodiumAI-Agent /improve
