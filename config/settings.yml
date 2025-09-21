@@ -1,0 +1,45 @@
+# Minimal production-ready SearxNG settings for the add-on.
+server:
+  # If you're using Home Assistant Ingress leave this null.
+  base_url: null
+  listen: 0.0.0.0
+  port: 8080
+  proxies:
+    - trusted: []
+      headers: []
+core:
+  search:
+    safe_search: moderate
+    timeout: 20
+    per_page: 10
+    results:
+      - name: "general"
+security:
+  secret_key: null
+  cookie_secure: true
+  cookie_name: "searxng_session"
+  csrf:
+    enabled: true
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+ui:
+  theme: "light"
+  show_branding: false
+  show_help: false
+engines:
+  # minimal engine set — keep defaults and enable servers in the SearxNG management UI
+  - name: google
+  - name: duckduckgo
+  - name: bing
+  - name: yahoo
+database:
+  path: "/var/lib/searxng/searxng.db"
+cache:
+  path: "/var/lib/searxng/cache"
+api:
+  enabled: true
+  key: null
+rate_limit:
+  enabled: true
+  per_ip: 60

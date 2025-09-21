@@ -1,25 +1,63 @@
-SearxNG Home Assistant Add-on
-=============================
+# SearxNG — Home Assistant Supervisor Add-on
 
-Dieses Add-on verwendet das offizielle Docker-Image searxng/searxng und stellt eine lokale Instanz von SearxNG bereit.
+Dieses Repository enthält ein production‑taugliches Home Assistant Supervisor Add‑on, das SearxNG als interne Such‑Engine bereitstellt. Das Add‑on unterstützt Ingress, persistente Speicherung von Konfiguration/DB, konfigurierbare Ports und Versionierung des SearxNG-Pakets.
 
-Installation
-1. Lege den Ordner /addons/local/searxng an (Samba oder SSH).
-2. Kopiere die Dateien config.json, options.json und optional run.sh und icon.png in den Ordner.
-3. Falls run.sh verwendet wird: chmod +x run.sh
-4. Supervisor neu starten, falls das Add-on nicht automatisch erscheint:
-   - Home Assistant → Einstellungen → System → Host → Neustart
-   - oder per SSH: ha supervisor restart
-5. Home Assistant → Supervisor → Add-on-Store → Lokale Add-ons → SearxNG → Install.
+## Inhalt
+- config.json — Add‑on Metadaten und Optionen
+- Dockerfile — Produktionsimage mit runtime-installation von SearxNG
+- entrypoint.sh, run.sh — Startup/Entrypoint-Skripte
+- default_searxng_settings.yml — empfohlene Produktionskonfiguration
+- logo.png — optionales Icon
 
-Konfiguration
-- Persistente Konfiguration liegt unter /addons/local/searxng/config (enthält settings.yml).
-- Standard-Host-Port: 8080 (anpassbar in config.json / options.json).
+## Voraussetzungen
+- Home Assistant OS mit Supervisor (lokal)
+- Schreibzugriff auf /share (Supervisor Share) für Persistenz
+- Grundkenntnisse: Add‑on Installation, Editieren von YAML
 
-Starten und Logs
-- Add-on starten in Supervisor UI.
-- Logs: Supervisor → Add-on → Logs.
+## Installation
+1. Repository in ein Git-Repo packen oder als lokales Verzeichnis bereitstellen.
+2. Home Assistant → Supervisor → Add‑on‑Store → Drei‑Punkte → "Repositories" → "Repository hinzufügen" → URL oder Pfad deines Repos.
+3. In Add‑on‑Store "SearxNG" auswählen, installieren.
+4. Unter "Configuration" die Optionen setzen (siehe unten).
+5. Installieren und starten. Bei aktivierter Ingress über Supervisor → SearxNG → "Open Web UI" öffnen.
 
-Hinweise
-- Wenn Port 8080 belegt ist, ändere das Mapping in config.json (z. B. "8080/tcp": 9000).
-- Änderungen an /config erfordern meist einen Neustart des Add-ons.
+## Optionen (config.json)
+- listen_port (int, default 8080) — interner HTTP-Port.
+- base_url (string|null) — Basispfad, wenn hinter Reverse‑Proxy oder Ingress.
+- bind_address (string, default "0.0.0.0") — Interface.
+- searxng_version (string, default "latest") — pip-Version von SearxNG.
+- persistence_enable (bool, default true) — Persistente Speicherung aktivieren.
+- persistence_path (string, default "/share/searxng") — Pfad auf Host für persistente Daten.
+- secret_key (string, optional) — optionaler Security Secret Key; wird generiert, falls leer.
+
+## Persistenz
+- Standardpfad: /share/searxng (muss in config.json als map vorhanden sein).
+- Struktur (bei aktivierter Persistenz):
+  - settings/settings.yml
+  - var/ (DB, cache)
+
+## Sicherheitsempfehlungen
+- Verwende Ingress (empfohlen) oder setze HTTPS + Auth im Reverse Proxy.
+- Setze ein starkes secret_key, falls die Instanz extern erreichbar ist.
+- Aktiviere rate limiting und sichere API‑Keys.
+
+## Updates & Backup
+- Update via Änderung der Option `searxng_version` und Neustart.
+- Backup: /share/searxng/settings.yml und /share/searxng/var/searxng.db sichern.
+
+## Troubleshooting
+- Logs: Supervisor → Add‑on → Log.
+- Häufige Fehler:
+  - Fehlende Schreibrechte auf /share: prüfen.
+  - Pip-Install schlägt fehl: Netzwerk/Zugang prüfen.
+  - Port-Konflikte: Host-Port prüfen, bei Ingress kein externer Port nötig.
+
+## Entwicklung & Debug
+- Lokal bauen:
+  docker build -t searxng-addon .
+  docker run -it --rm -p 8080:8080 -v /path/to/share/searxng:/share/searxng searxng-addon
+
+## Lizenz & Quellen
+- Add‑on: Passe Lizenz/Author nach Bedarf an.
+- SearxNG upstream: https://github.com/searxng/searxng
+- Docker image reference: https://hub.docker.com/r/searxng/searxng

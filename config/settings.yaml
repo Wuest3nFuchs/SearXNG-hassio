@@ -1,9 +1,0 @@
-http server:
-  bind_address: 0.0.0.0
-  port: 8080
-
-# Beispiel-Optionen — passe bei Bedarf an
-# search:
-#   engine:
-#     - name: google
-#       enabled: false
